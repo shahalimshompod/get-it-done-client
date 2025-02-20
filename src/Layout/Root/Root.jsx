@@ -1,10 +1,10 @@
-import Sidebar from "../../Sections/Sidebar/Sidebar";
+import Navbar from "../../Sections/Navbar/Navbar";
 import { Outlet } from "react-router-dom";
 
 const Root = () => {
   return (
     <div>
-      <Sidebar />
+      <Navbar />
       <Outlet />
     </div>
   );
