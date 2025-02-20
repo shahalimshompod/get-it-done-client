@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaUserLarge } from "react-icons/fa6";
 import { TbAlertTriangleFilled } from "react-icons/tb";
 import { FaTasks } from "react-icons/fa";
 import { LuLogOut } from "react-icons/lu";
@@ -11,7 +10,7 @@ import { BiTask } from "react-icons/bi";
 
 const Sidebar = () => {
   return (
-    <div className="bg-[#FF6767] w-80 h-[88vh] sticky top-0 flex flex-col p-6 rounded-tr-xl rounded-br-xl text-white mt-10">
+    <div className="bg-[#FF6767] w-80 h-[88vh] sticky top-32 flex flex-col p-6 rounded-tr-xl rounded-br-xl text-white mt-10">
       {/* Profile Section */}
       <div className="flex flex-col items-center mb-8 relative">
         <div className="w-24 h-24 overflow-hidden rounded-full border-4 border-white absolute -top-15">
@@ -45,24 +44,6 @@ const Sidebar = () => {
                   <MdSpaceDashboard size={25} />
                 </span>
                 <span>Dashboard</span>
-              </p>
-            </NavLink>
-          </li>
-
-          <li>
-            <NavLink
-              to="/my-profile"
-              className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition duration-300 montserrat text-xl ${
-                  isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
-                }`
-              }
-            >
-              <p className="ml-2 flex items-center gap-2">
-                <span>
-                  <FaUserLarge size={20} />
-                </span>
-                <span>My Profile</span>
               </p>
             </NavLink>
           </li>
@@ -131,7 +112,7 @@ const Sidebar = () => {
             >
               <p className="ml-2 flex items-center gap-2">
                 <span>
-                <MdOutlinePendingActions size={25} />
+                  <MdOutlinePendingActions size={25} />
                 </span>
                 <span>To do</span>
               </p>

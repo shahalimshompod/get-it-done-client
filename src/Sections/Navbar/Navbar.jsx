@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaUserLarge } from "react-icons/fa6";
 import { TbAlertTriangleFilled } from "react-icons/tb";
 import { FaTasks } from "react-icons/fa";
 import { LuLogOut } from "react-icons/lu";
@@ -29,7 +28,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="navbar bg-[#F8F8F8] shadow-sm py-5 px-2 lg:px-14">
+    <div className="navbar bg-[#F8F8F8] shadow-sm py-5 px-2 lg:px-14 sticky top-0 z-50">
       <div className="flex-1">
         <a className="text-xl lg:text-3xl font-black italia">
           Getit<span className="text-[#FF6767]">done</span>
@@ -88,24 +87,6 @@ const Navbar = () => {
                     <MdSpaceDashboard size={25} />
                   </span>
                   <span>Dashboard</span>
-                </p>
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink
-                to="/my-profile"
-                className={({ isActive }) =>
-                  `flex items-center p-3 rounded-lg transition duration-300 montserrat text-sm ${
-                    isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
-                  }`
-                }
-              >
-                <p className="ml-2 flex items-center gap-2">
-                  <span>
-                    <FaUserLarge size={20} />
-                  </span>
-                  <span>My Profile</span>
                 </p>
               </NavLink>
             </li>

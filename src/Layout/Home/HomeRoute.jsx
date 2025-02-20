@@ -3,8 +3,10 @@ import Sidebar from "../../Sections/Sidebar/Sidebar";
 
 const HomeRoute = () => {
   return (
-    <div className="flex gap-10">
-      <Sidebar />
+    <div className="flex gap-20 px-2 lg:px-0 mr-20">
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
       <Outlet />
     </div>
   );

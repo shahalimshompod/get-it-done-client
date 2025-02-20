@@ -10,7 +10,6 @@ import VitalTask from "./Private/VitalTask/VitalTask";
 import AllTask from "./Private/AllTask/AllTask";
 import TaskCategory from "./Private/TaskCategory/TaskCategory";
 import Todo from "./Private/Todo/Todo";
-import CompletedTask from "./Private/CompletedTask/CompletedTask";
 import InProgress from "./Private/InProgress/InProgress";
 
 const router = createBrowserRouter([
@@ -67,13 +66,6 @@ const router = createBrowserRouter([
           {
             path: "/tasks/in-progress",
             element: <InProgress />,
-            loader: () => {
-              document.title = "My Profile | GetItDone";
-            },
-          },
-          {
-            path: "/tasks/completed",
-            element: <CompletedTask />,
             loader: () => {
               document.title = "My Profile | GetItDone";
             },
