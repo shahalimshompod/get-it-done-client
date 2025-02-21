@@ -7,8 +7,20 @@ import { MdCategory } from "react-icons/md";
 import { MdOutlinePendingActions } from "react-icons/md";
 import { GrInProgress } from "react-icons/gr";
 import { BiTask } from "react-icons/bi";
+import { useContext } from "react";
+import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
+import toast from "react-hot-toast";
 
 const Sidebar = () => {
+  const { user, userLogout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    console.log(user);
+    userLogout();
+    if (user?.email) {
+      toast.success("Successfully Logged out!");
+    }
+  };
   return (
     <div className="bg-[#FF6767] w-80 h-[88vh] sticky top-32 flex flex-col p-6 rounded-tr-xl rounded-br-xl text-white mt-10">
       {/* Profile Section */}
@@ -159,7 +171,10 @@ const Sidebar = () => {
 
       {/* Logout Button */}
       <div className="mt-auto">
-        <button className="w-full p-3 rounded-lg text-left cursor-pointer montserrat hover:bg-[#fff]/20 transition duration-300 flex items-center gap-2 text-xl">
+        <button
+          onClick={handleLogout}
+          className="w-full p-3 rounded-lg text-left cursor-pointer montserrat hover:bg-[#fff]/20 transition duration-300 flex items-center gap-2 text-xl"
+        >
           <span>
             <LuLogOut />
           </span>

@@ -11,61 +11,102 @@ import AllTask from "./Private/AllTask/AllTask";
 import TaskCategory from "./Private/TaskCategory/TaskCategory";
 import Todo from "./Private/Todo/Todo";
 import InProgress from "./Private/InProgress/InProgress";
+import AuthContextProvider from "./Authentication/AuthContext/AuthContextProvider";
+import Login from "./Pages/Login/Login";
+import Register from "./Pages/Register/Register";
+import { Toaster } from "react-hot-toast";
+import SecureRoute from "./Authentication/SecureRoute/SecureRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: (
+      <SecureRoute>
+        <Root />
+      </SecureRoute>
+    ),
     children: [
       {
         path: "/",
-        element: <HomeRoute />,
+        element: (
+          <SecureRoute>
+            <HomeRoute />
+          </SecureRoute>
+        ),
         children: [
           {
             path: "/",
-            element: <Dashboard />,
+            element: (
+              <SecureRoute>
+                <Dashboard />
+              </SecureRoute>
+            ),
             loader: () => {
               document.title = "Dashboard | GetItDone";
             },
           },
           {
             path: "/my-profile",
-            element: <MyProfile />,
+            element: (
+              <SecureRoute>
+                <MyProfile />
+              </SecureRoute>
+            ),
             loader: () => {
               document.title = "My Profile | GetItDone";
             },
           },
           {
             path: "/tasks/vital-task",
-            element: <VitalTask />,
+            element: (
+              <SecureRoute>
+                <VitalTask />
+              </SecureRoute>
+            ),
             loader: () => {
               document.title = "My Profile | GetIt Done";
             },
           },
           {
             path: "/tasks/my-tasks",
-            element: <AllTask />,
+            element: (
+              <SecureRoute>
+                <AllTask />
+              </SecureRoute>
+            ),
             loader: () => {
               document.title = "My Profile | GetItDone";
             },
           },
           {
             path: "/tasks/task-categories",
-            element: <TaskCategory />,
+            element: (
+              <SecureRoute>
+                <TaskCategory />
+              </SecureRoute>
+            ),
             loader: () => {
               document.title = "My Profile | GetItDone";
             },
           },
           {
             path: "/tasks/to-do",
-            element: <Todo />,
+            element: (
+              <SecureRoute>
+                <Todo />
+              </SecureRoute>
+            ),
             loader: () => {
               document.title = "My Profile | GetItDone";
             },
           },
           {
             path: "/tasks/in-progress",
-            element: <InProgress />,
+            element: (
+              <SecureRoute>
+                <InProgress />
+              </SecureRoute>
+            ),
             loader: () => {
               document.title = "My Profile | GetItDone";
             },
@@ -74,10 +115,27 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/login",
+    element: <Login />,
+    loader: () => {
+      document.title = "Login | GetItDone";
+    },
+  },
+  {
+    path: "/register",
+    element: <Register />,
+    loader: () => {
+      document.title = "Register | GetItDone";
+    },
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthContextProvider>
+      <Toaster />
+      <RouterProvider router={router} />
+    </AuthContextProvider>
   </StrictMode>
 );
