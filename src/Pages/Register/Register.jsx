@@ -58,10 +58,7 @@ const Register = () => {
     createUser(email, password).then(async (result) => {
       const registeredUser = result?.user;
       setUser(registeredUser);
-      setRegisterLoading(false);
       toast.success("Successfully Registered!");
-
-      console.log(registeredUser);
 
       // sent image to imagebb for hosting
       const res = await axiosPublic.post(img_hosting_api, imageFile, {
@@ -76,13 +73,18 @@ const Register = () => {
       //   updating user
       updateUser({ displayName: name, photoURL: image });
 
-      //   TODO
-      // /**
-      //  * ADD USER TO DATABASE
-      //  * /
+      // user information to be added to database
+      const userInfo = {
+        name: name,
+        email: email,
+        image: image,
+      };
 
-      if (image) {
-        console.log(image);
+      // user add to the database
+      const response = await axiosPublic.post("/users", userInfo);
+      if (response?.data.insertedId) {
+        setRegisterLoading(false);
+        navigate("/");
       }
     });
   };
@@ -91,12 +93,26 @@ const Register = () => {
   const googleLogin = () => {
     setGoogleLoading(true);
     signInWithGoogle()
-      .then((result) => {
+      .then(async (result) => {
         const newUser = result?.user;
         if (newUser) {
           setUser(newUser);
-          navigate("/");
           toast.success("Successfully Logged in!");
+          navigate("/");
+
+          // collect user data
+          const userInfo = {
+            name: newUser?.displayName,
+            email: newUser?.email,
+            image: newUser?.photoURL,
+          };
+
+          // sent user data to database
+          const response = await axiosPublic.post("/users", userInfo);
+          if (response?.data.insertedId) {
+            navigate("/");
+            setGoogleLoading(false);
+          }
           // TODO- STORE THE USER TO DATABASE
         }
       })

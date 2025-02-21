@@ -8,8 +8,10 @@ import animation from "../../assets/lotties/login.json";
 import Lottie from "lottie-react";
 import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
 import toast from "react-hot-toast";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Login = () => {
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const {
     user,
@@ -55,12 +57,26 @@ const Login = () => {
   const googleLogin = () => {
     setGoogleLoading(true);
     signInWithGoogle()
-      .then((result) => {
+      .then(async (result) => {
         const newUser = result?.user;
         if (newUser) {
           setUser(newUser);
-          navigate("/");
           toast.success("Successfully Logged in!");
+          navigate("/");
+
+          // collect user data
+          const userInfo = {
+            name: newUser?.displayName,
+            email: newUser?.email,
+            image: newUser?.photoURL,
+          };
+
+          // sent user data to database
+          const response = await axiosPublic.post("/users", userInfo);
+          if (response?.data.insertedId) {
+            navigate("/");
+            setGoogleLoading(false);
+          }
           // TODO- STORE THE USER TO DATABASE
         }
       })
