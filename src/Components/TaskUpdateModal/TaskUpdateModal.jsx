@@ -1,13 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
-import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
 
-const TaskModal = ({ isOpen, onClose }) => {
-  const { user } = useContext(AuthContext);
+const TaskUpdateModal = ({ selectedTask, setSelectedTask }) => {
+  //   const {task_category, task_title, task_priority, task_description} = selectedTask;
 
   const axiosSecure = useAxiosSecure();
   const {
@@ -18,31 +17,67 @@ const TaskModal = ({ isOpen, onClose }) => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log(data);
     const task_title = data.title;
-    const task_description = data.description;
     const task_category = data.category;
     const task_priority = data.priority;
-    const user_Email = user?.email;
+    const task_description = data.description;
 
-    const dataToSend = {
+    const updatedTask = {
       task_title,
-      task_description,
       task_category,
       task_priority,
-      email: user_Email,
+      task_description,
     };
 
-    const res = await axiosSecure.post("/add-tasks", dataToSend);
-    if (res?.data.insertedId) {
-      toast.success("Task Added Successfully");
-      onClose();
+    if (!selectedTask._id) {
+      toast.error("Something went wrong! Please try again later.");
+      return;
+    }
+
+    // send update req
+    const res = await axiosSecure.put(
+      `/task-update/${selectedTask?._id}`,
+      updatedTask
+    );
+    console.log(res?.data);
+    if (res?.data.modifiedCount > 0) {
+      toast.success("Task updated successfully!");
+      setSelectedTask(null);
+      reset();
+    } else {
+      toast(`${res?.data.message}`, {
+        duration: 4000,
+        position: "top-center",
+
+        // Styling
+        style: {},
+        className: "",
+
+        // Custom Icon
+        icon: "ℹ️",
+
+        // Change colors of success/error/loading icon
+        iconTheme: {
+          primary: "#000",
+          secondary: "#fff",
+        },
+
+        // Aria
+        ariaProps: {
+          role: "status",
+          "aria-live": "polite",
+        },
+
+        // Additional Configuration
+        removeDelay: 1000,
+      });
+      setSelectedTask(null);
       reset();
     }
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (selectedTask) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
@@ -50,9 +85,15 @@ const TaskModal = ({ isOpen, onClose }) => {
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [isOpen]);
+  }, [selectedTask]);
 
-  if (!isOpen) return null;
+  //   close modal
+  const handleCloseModal = () => {
+    setSelectedTask(null);
+    reset();
+  };
+
+  if (!selectedTask) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#FF6767]/30 bg-opacity-50 z-50">
@@ -64,16 +105,18 @@ const TaskModal = ({ isOpen, onClose }) => {
         className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative"
       >
         <button
-          onClick={onClose}
+          onClick={handleCloseModal}
           className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 btn bg-transparent hover:bg-transparent border-none shadow-none"
         >
           &times;
         </button>
         <h2 className="text-xl font-semibold mb-4">Add New Task</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* task title */}
           <div>
             <label className="block text-sm font-medium">Task Title</label>
             <input
+              defaultValue={selectedTask.task_title}
               type="text"
               {...register("title", { required: "Task title is required" })}
               className="w-full p-2 border rounded-md"
@@ -83,11 +126,13 @@ const TaskModal = ({ isOpen, onClose }) => {
             )}
           </div>
 
+          {/* task description */}
           <div>
             <label className="block text-sm font-medium">
               Task Description
             </label>
             <textarea
+              defaultValue={selectedTask.task_description}
               {...register("description", {
                 required: "Task description is required",
               })}
@@ -100,9 +145,11 @@ const TaskModal = ({ isOpen, onClose }) => {
             )}
           </div>
 
+          {/* task category */}
           <div>
             <label className="block text-sm font-medium">Task Category</label>
             <select
+              defaultValue={selectedTask.task_category}
               {...register("category", {
                 required: "Task category is required",
               })}
@@ -121,6 +168,7 @@ const TaskModal = ({ isOpen, onClose }) => {
           <div>
             <label className="block text-sm font-medium">Task Priority</label>
             <select
+              defaultValue={selectedTask.task_priority}
               {...register("priority", {
                 required: "Task priority is required",
               })}
@@ -148,4 +196,4 @@ const TaskModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default TaskModal;
+export default TaskUpdateModal;

@@ -3,9 +3,11 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import TaskCard from "../TaskCard/TaskCard";
 import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
 import useSocket from "../../hooks/useSocket";
+import TaskUpdateModal from "../TaskUpdateModal/TaskUpdateModal";
 
 const TaskCardContainerCompleted = () => {
   const axiosSecure = useAxiosSecure();
+  const [selectedTask, setSelectedTask] = useState(null);
   const [completedTaskData, setCompletedTaskData] = useState([]);
   const { user } = useContext(AuthContext);
   const email = user?.email;
@@ -33,13 +35,22 @@ const TaskCardContainerCompleted = () => {
     }
   });
 
+  //   socket task deleted
+  useSocket("TaskDeleted", (id) => {
+    setCompletedTaskData((prev) => prev.filter((data) => data._id !== id));
+  });
+
   return (
     <div>
       <div className="">
         {completedTaskData.map((data, idx) => (
-          <TaskCard key={idx} data={data} />
+          <TaskCard setSelectedTask={setSelectedTask} key={idx} data={data} />
         ))}
       </div>
+      <TaskUpdateModal
+        selectedTask={selectedTask}
+        setSelectedTask={setSelectedTask}
+      />
     </div>
   );
 };

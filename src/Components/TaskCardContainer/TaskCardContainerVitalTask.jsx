@@ -3,14 +3,14 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import TaskCard from "../TaskCard/TaskCard";
 import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
 import useSocket from "../../hooks/useSocket";
+import TaskUpdateModal from "../TaskUpdateModal/TaskUpdateModal";
 
 const TaskCardContainerVitalTask = () => {
   const axiosSecure = useAxiosSecure();
+  const [selectedTask, setSelectedTask] = useState(null);
   const [vitalTaskData, setVitalTaskData] = useState([]);
   const { user } = useContext(AuthContext);
   const email = user?.email;
-
-  console.log(vitalTaskData);
 
   // fetch data
   const fetchTaskData = async () => {
@@ -25,7 +25,8 @@ const TaskCardContainerVitalTask = () => {
     fetchTaskData();
   }, []);
 
-  // socket
+  //   SOCKET
+  // socket task added
   useSocket("TaskAdded", (data) => {
     // fetchTaskData()
     if (data.email === email && data.task_priority === "extreme") {
@@ -33,13 +34,23 @@ const TaskCardContainerVitalTask = () => {
     }
   });
 
+  //   socket task deleted
+  useSocket("TaskDeleted", (id) => {
+    setVitalTaskData((prev) => prev.filter((data) => data._id !== id));
+  });
+
   return (
     <div>
       <div className="">
         {vitalTaskData.map((data, idx) => (
-          <TaskCard key={idx} data={data} />
+          <TaskCard setSelectedTask={setSelectedTask} key={idx} data={data} />
         ))}
       </div>
+      {/* update form */}
+      <TaskUpdateModal
+        selectedTask={selectedTask}
+        setSelectedTask={setSelectedTask}
+      />
     </div>
   );
 };
