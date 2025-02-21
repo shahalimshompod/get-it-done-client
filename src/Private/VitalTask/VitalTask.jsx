@@ -1,6 +1,5 @@
-import TaskCardContainer from "../../Components/TaskCardContainer/TaskCardContainer";
-import { IoMdAdd } from "react-icons/io";
 import { TbAlertTriangleFilled } from "react-icons/tb";
+import TaskCardContainerVitalTask from "../../Components/TaskCardContainer/TaskCardContainerVitalTask";
 
 const VitalTask = () => {
   return (
@@ -10,17 +9,13 @@ const VitalTask = () => {
           <span className="text-gray-400">
             <TbAlertTriangleFilled size={22} />
           </span>
-          <span className="montserrat font-semibold text-[#FF6767]">Vital Tasks</span>
+          <span className="montserrat font-semibold text-[#FF6767]">
+            Vital Tasks
+          </span>
         </h1>
-        <button className="btn btn-ghost hover:border-none  montserrat flex items-center gap-2">
-          <span className="text-[#FF6767]">
-            <IoMdAdd size={25} />
-          </span>{" "}
-          <span className=" font-semibold text-gray-500">Add tasks</span>
-        </button>
       </div>
       <div>
-        <TaskCardContainer />
+        <TaskCardContainerVitalTask />
       </div>
     </div>
   );

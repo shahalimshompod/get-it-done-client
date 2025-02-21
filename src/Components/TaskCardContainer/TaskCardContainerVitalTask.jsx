@@ -4,19 +4,19 @@ import TaskCard from "../TaskCard/TaskCard";
 import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
 import useSocket from "../../hooks/useSocket";
 
-const TaskCardContainerAllTask = () => {
+const TaskCardContainerVitalTask = () => {
   const axiosSecure = useAxiosSecure();
-  const [allTaskData, setAllTaskData] = useState([]);
+  const [vitalTaskData, setVitalTaskData] = useState([]);
   const { user } = useContext(AuthContext);
   const email = user?.email;
 
-  console.log(allTaskData);
+  console.log(vitalTaskData);
 
   // fetch data
   const fetchTaskData = async () => {
-    const res = await axiosSecure.get(`/all-tasks?query=${email}`);
+    const res = await axiosSecure.get(`/vital-tasks?query=${email}`);
     if (res?.data) {
-      setAllTaskData(res?.data);
+      setVitalTaskData(res?.data);
     }
   };
 
@@ -28,15 +28,15 @@ const TaskCardContainerAllTask = () => {
   // socket
   useSocket("TaskAdded", (data) => {
     // fetchTaskData()
-    if (data.email === email) {
-      setAllTaskData((prev) => [data, ...prev]);
+    if (data.email === email && data.task_priority === "extreme") {
+      setVitalTaskData((prev) => [data, ...prev]);
     }
   });
 
   return (
     <div>
       <div className="">
-        {allTaskData.map((data, idx) => (
+        {vitalTaskData.map((data, idx) => (
           <TaskCard key={idx} data={data} />
         ))}
       </div>
@@ -44,4 +44,4 @@ const TaskCardContainerAllTask = () => {
   );
 };
 
-export default TaskCardContainerAllTask;
+export default TaskCardContainerVitalTask;
