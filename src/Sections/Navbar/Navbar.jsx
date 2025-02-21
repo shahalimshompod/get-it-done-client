@@ -10,9 +10,12 @@ import { BiTask } from "react-icons/bi";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { SlCalender } from "react-icons/sl";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
 
 const Navbar = () => {
+  const { user } = useContext(AuthContext);
+  const { photoURL } = user;
   const [cal, setCal] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false); // State to toggle calendar visibility
   const today = new Date();
@@ -62,10 +65,7 @@ const Navbar = () => {
             className="btn btn-ghost btn-circle avatar"
           >
             <div className="w-10 rounded-full">
-              <img
-                alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
+              <img alt="Tailwind CSS Navbar component" src={photoURL} />
             </div>
           </div>
           <ul

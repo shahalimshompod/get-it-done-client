@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 
 const Sidebar = () => {
   const { user, userLogout } = useContext(AuthContext);
+  const { displayName, email, photoURL } = user;
 
   const handleLogout = () => {
     console.log(user);
@@ -28,13 +29,15 @@ const Sidebar = () => {
         <div className="w-24 h-24 overflow-hidden rounded-full border-4 border-white absolute -top-15">
           <img
             className="w-full h-full object-cover"
-            src="https://imgv3.fotor.com/images/blog-cover-image/a-shadow-of-a-boy-carrying-the-camera-with-red-sky-behind.jpg"
+            src={photoURL}
             alt="User"
           />
         </div>
         <div className="flex flex-col items-center mt-7">
-          <h2 className="mt-4 text-2xl montserrat font-semibold ">John Doe</h2>
-          <p className="text-sm montserrat text-white">john.doe@example.com</p>
+          <h2 className="mt-4 text-2xl montserrat font-semibold ">
+            {displayName}
+          </h2>
+          <p className="text-sm montserrat text-white">{email}</p>
         </div>
       </div>
 

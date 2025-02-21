@@ -5,7 +5,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./Layout/Root/Root";
 import HomeRoute from "./Layout/Home/HomeRoute";
 import Dashboard from "./Private/Dashboard/Dashboard";
-import MyProfile from "./Private/MyProfile/MyProfile";
 import VitalTask from "./Private/VitalTask/VitalTask";
 import AllTask from "./Private/AllTask/AllTask";
 import TaskCategory from "./Private/TaskCategory/TaskCategory";
@@ -16,6 +15,7 @@ import Login from "./Pages/Login/Login";
 import Register from "./Pages/Register/Register";
 import { Toaster } from "react-hot-toast";
 import SecureRoute from "./Authentication/SecureRoute/SecureRoute";
+import CompletedTask from "./Private/CompletedTask/CompletedTask";
 
 const router = createBrowserRouter([
   {
@@ -45,17 +45,17 @@ const router = createBrowserRouter([
               document.title = "Dashboard | GetItDone";
             },
           },
-          {
-            path: "/my-profile",
-            element: (
-              <SecureRoute>
-                <MyProfile />
-              </SecureRoute>
-            ),
-            loader: () => {
-              document.title = "My Profile | GetItDone";
-            },
-          },
+          // {
+          //   path: "/my-profile",
+          //   element: (
+          //     <SecureRoute>
+          //       <MyProfile />
+          //     </SecureRoute>
+          //   ),
+          //   loader: () => {
+          //     document.title = "My Profile | GetItDone";
+          //   },
+          // },
           {
             path: "/tasks/vital-task",
             element: (
@@ -64,7 +64,7 @@ const router = createBrowserRouter([
               </SecureRoute>
             ),
             loader: () => {
-              document.title = "My Profile | GetIt Done";
+              document.title = "Vital Tasks | GetIt Done";
             },
           },
           {
@@ -75,7 +75,7 @@ const router = createBrowserRouter([
               </SecureRoute>
             ),
             loader: () => {
-              document.title = "My Profile | GetItDone";
+              document.title = "My Tasks | GetItDone";
             },
           },
           {
@@ -86,7 +86,7 @@ const router = createBrowserRouter([
               </SecureRoute>
             ),
             loader: () => {
-              document.title = "My Profile | GetItDone";
+              document.title = "Task Category | GetItDone";
             },
           },
           {
@@ -97,7 +97,7 @@ const router = createBrowserRouter([
               </SecureRoute>
             ),
             loader: () => {
-              document.title = "My Profile | GetItDone";
+              document.title = "To Do | GetItDone";
             },
           },
           {
@@ -108,7 +108,18 @@ const router = createBrowserRouter([
               </SecureRoute>
             ),
             loader: () => {
-              document.title = "My Profile | GetItDone";
+              document.title = "In Progress | GetItDone";
+            },
+          },
+          {
+            path: "/tasks/completed",
+            element: (
+              <SecureRoute>
+                <CompletedTask />
+              </SecureRoute>
+            ),
+            loader: () => {
+              document.title = "Completed Task | GetItDone";
             },
           },
         ],

@@ -4,23 +4,19 @@ import TaskCard from "../TaskCard/TaskCard";
 import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
 import useSocket from "../../hooks/useSocket";
 
-const TaskCardContainer = () => {
+const TaskCardContainerAllTask = () => {
   const axiosSecure = useAxiosSecure();
-  const [todoData, setTodoData] = useState([]);
+  const [completedTaskData, setCompletedTaskData] = useState([]);
   const { user } = useContext(AuthContext);
   const email = user?.email;
 
-  console.log(todoData);
-
-  // useSocket("TaskDelete", (id) => {
-  //   setTodoData;
-  // });
+  console.log(completedTaskData);
 
   // fetch data
   const fetchTaskData = async () => {
-    const res = await axiosSecure.get(`/todo-tasks?query=${email}`);
+    const res = await axiosSecure.get(`/completed-tasks?query=${email}`);
     if (res?.data) {
-      setTodoData(res?.data);
+      setCompletedTaskData(res?.data);
     }
   };
 
@@ -32,15 +28,15 @@ const TaskCardContainer = () => {
   // socket
   useSocket("TaskAdded", (data) => {
     // fetchTaskData()
-    if (data.task_category === "not started" && data.email === email) {
-      setTodoData((prev) => [data, ...prev]);
+    if (data.task_category === "completed" && data.email === email) {
+      setCompletedTaskData((prev) => [data, ...prev]);
     }
   });
 
   return (
     <div>
       <div className="">
-        {todoData.map((data, idx) => (
+        {completedTaskData.map((data, idx) => (
           <TaskCard key={idx} data={data} />
         ))}
       </div>
@@ -48,4 +44,4 @@ const TaskCardContainer = () => {
   );
 };
 
-export default TaskCardContainer;
+export default TaskCardContainerAllTask;
