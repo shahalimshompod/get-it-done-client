@@ -1,4 +1,3 @@
-// useSocket.js (Custom hook)
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 
@@ -13,7 +12,7 @@ const useSocket = (event, callback) => {
     // Listen to events
     socket.on(event, callback);
 
-    // Cleanup listener on component unmount
+    // Cleanup on component unmount
     return () => {
       socket.off(event);
     };

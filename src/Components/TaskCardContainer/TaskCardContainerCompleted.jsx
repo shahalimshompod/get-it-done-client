@@ -25,7 +25,7 @@ const TaskCardContainerCompleted = () => {
   // effect handle
   useEffect(() => {
     fetchTaskData();
-  }, []);
+  }, [completedTaskData]);
 
   // socket
   useSocket("TaskAdded", (data) => {
