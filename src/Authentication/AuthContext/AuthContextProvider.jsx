@@ -11,7 +11,10 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+
 export const AuthContext = createContext(null);
+
 const AuthContextProvider = ({ children }) => {
   // states
   const [user, setUser] = useState(null);
@@ -19,6 +22,7 @@ const AuthContextProvider = ({ children }) => {
   const [loginLoading, setLoginLoading] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
+  const axiosPublic = useAxiosPublic();
 
   // sign in with google
   const googleProvider = new GoogleAuthProvider();
@@ -71,11 +75,23 @@ const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        setUser(currentUser);
+        const currentUserEmail = {
+          email: currentUser?.email,
+        };
+
+        // store token
+        axiosPublic.post("/jwt", currentUserEmail).then((res) => {
+          if (res?.data.token) {
+            localStorage.setItem("access-token", res?.data.token);
+          }
+        });
       } else {
-        setUser(null); // Clear user state if no user is logged in
+        // remove token
+        localStorage.removeItem("access-token");
+        // setUser(null);
       }
       // Reset all loading states
+      setUser(currentUser);
       setGoogleLoading(false);
       setLoginLoading(false);
       setRegisterLoading(false);

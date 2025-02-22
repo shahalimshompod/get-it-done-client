@@ -16,6 +16,8 @@ import Register from "./Pages/Register/Register";
 import { Toaster } from "react-hot-toast";
 import SecureRoute from "./Authentication/SecureRoute/SecureRoute";
 import CompletedTask from "./Private/CompletedTask/CompletedTask";
+import ErrorPage from "./Pages/ErrorPage/ErrorPage";
+import UnauthorizedPage from "./Pages/UnauthorizedPage/UnauthorizedPage";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +27,7 @@ const router = createBrowserRouter([
         <Root />
       </SecureRoute>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/",
@@ -45,17 +48,6 @@ const router = createBrowserRouter([
               document.title = "Dashboard | GetItDone";
             },
           },
-          // {
-          //   path: "/my-profile",
-          //   element: (
-          //     <SecureRoute>
-          //       <MyProfile />
-          //     </SecureRoute>
-          //   ),
-          //   loader: () => {
-          //     document.title = "My Profile | GetItDone";
-          //   },
-          // },
           {
             path: "/tasks/vital-task",
             element: (
@@ -125,6 +117,14 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "/unauthorized-access",
+    element: <UnauthorizedPage />,
+    loader: () => {
+      document.title = "Unauthorized";
+      return;
+    },
   },
   {
     path: "/login",
