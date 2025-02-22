@@ -25,19 +25,38 @@ const TaskCardContainer = () => {
   // effect handle
   useEffect(() => {
     fetchTaskData();
-  }, []);
+  }, [email]);
 
   // socket
   useSocket("TaskAdded", (data) => {
-    // fetchTaskData()
     if (data.task_category === "not started" && data.email === email) {
       setTodoData((prev) => [data, ...prev]);
     }
   });
 
-  //   socket task deleted
+  // socket task deleted
   useSocket("TaskDeleted", (id) => {
     setTodoData((prev) => prev.filter((data) => data._id !== id));
+  });
+
+  // task update
+  useSocket("TaskUpdate", (updatedData) => {
+    if (updatedData.email === email) {
+      if (updatedData.task_category !== "not started") {
+        setTodoData((prev) =>
+          prev.filter((task) => task._id !== updatedData._id)
+        );
+      } else {
+        setTodoData((prev) =>
+          prev.map((task) =>
+            task._id === updatedData._id ? updatedData : task
+          )
+        );
+      }
+    }
+  });
+  useSocket("TaskUpdate", () => {
+    fetchTaskData();
   });
 
   return (

@@ -23,20 +23,44 @@ const TaskCardContainerVitalTask = () => {
   // effect handle
   useEffect(() => {
     fetchTaskData();
-  }, []);
+  }, [email]);
 
-  //   SOCKET
-  // socket task added
+  // Socket.IO Events
+  //   task add
   useSocket("TaskAdded", (data) => {
-    // fetchTaskData()
     if (data.email === email && data.task_priority === "extreme") {
       setVitalTaskData((prev) => [data, ...prev]);
     }
   });
 
-  //   socket task deleted
+  //   task delete
   useSocket("TaskDeleted", (id) => {
     setVitalTaskData((prev) => prev.filter((data) => data._id !== id));
+  });
+
+  //   task update
+  useSocket("TaskUpdate", (updatedData) => {
+    if (updatedData.email === email) {
+      if (updatedData.old_priority !== updatedData.task_priority) {
+        if (updatedData.old_priority === "extreme") {
+          setVitalTaskData((prev) =>
+            prev.filter((task) => task._id !== updatedData._id)
+          );
+        }
+      } else {
+        if (updatedData.task_priority === "extreme") {
+          setVitalTaskData((prev) =>
+            prev.map((task) =>
+              task._id === updatedData._id ? updatedData : task
+            )
+          );
+        }
+      }
+    }
+  });
+
+  useSocket("TaskUpdate", () => {
+    fetchTaskData();
   });
 
   return (

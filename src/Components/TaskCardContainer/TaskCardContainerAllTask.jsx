@@ -12,8 +12,6 @@ const TaskCardContainerAllTask = () => {
   const { user } = useContext(AuthContext);
   const email = user?.email;
 
-  console.log(allTaskData);
-
   // fetch data
   const fetchTaskData = async () => {
     const res = await axiosSecure.get(`/all-tasks?query=${email}`);
@@ -25,21 +23,43 @@ const TaskCardContainerAllTask = () => {
   // effect handle
   useEffect(() => {
     fetchTaskData();
-  }, []);
+  }, [email]);
 
   // socket
   useSocket("TaskAdded", (data) => {
-    // fetchTaskData()
-    if (data.email === email) {
+    if (data.email === email && data.task_category !== "completed") {
       setAllTaskData((prev) => [data, ...prev]);
     }
   });
 
-  //   socket task deleted
+  // socket task deleted
   useSocket("TaskDeleted", (id) => {
     setAllTaskData((prev) => prev.filter((data) => data._id !== id));
   });
 
+  // task update
+  useSocket("TaskUpdate", (updatedData) => {
+    if (updatedData.email === email) {
+      if (updatedData.task_category === "completed") {
+        // If task is completed, remove it from the list
+        setAllTaskData((prev) =>
+          prev.filter((task) => task._id !== updatedData._id)
+        );
+      } else {
+        // If task is not completed, update it in the list
+        setAllTaskData((prev) =>
+          prev.map((task) =>
+            task._id === updatedData._id ? updatedData : task
+          )
+        );
+      }
+    }
+  });
+  useSocket("TaskUpdate", () => {
+    fetchTaskData();
+  });
+
+  
   return (
     <div>
       <div className="">

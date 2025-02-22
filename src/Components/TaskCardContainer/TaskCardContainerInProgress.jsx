@@ -40,6 +40,29 @@ const TaskCardContainerInProgress = () => {
     setInProgressData((prev) => prev.filter((data) => data._id !== id));
   });
 
+  // task update
+  useSocket("TaskUpdate", (updatedData) => {
+    if (updatedData.email === email) {
+      if (updatedData.task_category !== "in progress") {
+        // If task is no longer "not started", remove it from the list
+        setInProgressData((prev) =>
+          prev.filter((task) => task._id !== updatedData._id)
+        );
+      } else {
+        // If task is still "not started", update it in the list
+        setInProgressData((prev) =>
+          prev.map((task) =>
+            task._id === updatedData._id ? updatedData : task
+          )
+        );
+      }
+    }
+  });
+
+  useSocket("TaskUpdate", () => {
+    fetchTaskData();
+  });
+
   return (
     <div>
       <div className="">
