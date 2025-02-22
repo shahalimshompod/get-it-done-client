@@ -3,7 +3,10 @@ import { useEffect } from "react";
 import { io } from "socket.io-client";
 
 // Socket instance
-const socket = io("https://getitdone-xi.vercel.app");
+const socket = io("https://get-it-done-server.onrender.com", {
+  transports: ["websocket", "polling"],
+});
+
 
 const useSocket = (event, callback) => {
   useEffect(() => {

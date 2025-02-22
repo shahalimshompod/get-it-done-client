@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosPublic = axios.create({
-  baseURL: "https://getitdone-xi.vercel.app",
+  baseURL: "https://get-it-done-server.onrender.com",
 });
 
 const useAxiosPublic = () => {
