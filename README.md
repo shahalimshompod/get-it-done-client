@@ -5,7 +5,7 @@
 ---
 
 ## 🌍 Live Demo  
-🔗 **Live Project:** [Pet Promise](https://getitdone-24.web.app/) 
+🔗 **Live Project:** [GetItDone](https://getitdone-24.web.app/) 
 
 ---
 
