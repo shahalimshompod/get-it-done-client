@@ -22,6 +22,14 @@ const TaskUpdateModal = ({ selectedTask, setSelectedTask }) => {
     const task_priority = data.priority;
     const task_description = data.description;
 
+    const updatedTaskData = {
+      task_title,
+      task_category,
+      task_priority,
+      task_description,
+      completedOn: new Date(),
+    };
+
     const updatedTask = {
       task_title,
       task_category,
@@ -37,7 +45,7 @@ const TaskUpdateModal = ({ selectedTask, setSelectedTask }) => {
     // send update req
     const res = await axiosSecure.put(
       `/task-update/${selectedTask?._id}`,
-      updatedTask
+      task_category === "completed" ? updatedTaskData : updatedTask
     );
     console.log(res?.data);
     if (res?.data.modifiedCount > 0) {

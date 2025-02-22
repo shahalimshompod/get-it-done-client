@@ -3,6 +3,9 @@ import Todo from "../Todo/Todo";
 import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
 import { IoMdAdd } from "react-icons/io";
 import TaskModal from "../../Components/TaskModal/TaskModal";
+import VitalTask from "../../Private/VitalTask/VitalTask";
+import InProgress from "../../Private/InProgress/InProgress";
+import CompletedTask from "../../Private/CompletedTask/CompletedTask";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -10,7 +13,7 @@ const Dashboard = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="mt-10 w-full">
+    <div className="mt-10 w-full h-[85vh]">
       <div className="flex items-center justify-between">
         <h1 className="text-5xl mb-6">
           <span className="montserrat">Welcome back</span>,{" "}
@@ -29,9 +32,13 @@ const Dashboard = () => {
       </div>
 
       {/* task container */}
-      <div className="flex gap-6 border-2 rounded border-gray-400 p-4">
+      <div className="flex gap-6 rounded p-4">
         <Todo />
-        <Todo />
+        <VitalTask />
+        <div className="w-full flex flex-col justify-between">
+          <InProgress />
+          <CompletedTask />
+        </div>
       </div>
 
       {/* Task Modal */}

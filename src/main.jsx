@@ -71,17 +71,6 @@ const router = createBrowserRouter([
             },
           },
           {
-            path: "/tasks/task-categories",
-            element: (
-              <SecureRoute>
-                <TaskCategory />
-              </SecureRoute>
-            ),
-            loader: () => {
-              document.title = "Task Category | GetItDone";
-            },
-          },
-          {
             path: "/tasks/to-do",
             element: (
               <SecureRoute>

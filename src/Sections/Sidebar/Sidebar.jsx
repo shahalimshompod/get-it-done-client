@@ -101,23 +101,6 @@ const Sidebar = () => {
 
           <li>
             <NavLink
-              to="/tasks/task-categories"
-              className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition duration-300 montserrat text-xl ${
-                  isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
-                }`
-              }
-            >
-              <p className="ml-2 flex items-center gap-2">
-                <span>
-                  <MdCategory size={22} />
-                </span>
-                <span>Task Categories</span>
-              </p>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
               to="/tasks/to-do"
               className={({ isActive }) =>
                 `flex items-center p-3 rounded-lg transition duration-300 montserrat text-xl ${

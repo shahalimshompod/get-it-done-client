@@ -4,7 +4,7 @@ import TaskCardContainerAllTask from "../../Components/TaskCardContainer/TaskCar
 
 const AllTask = () => {
   return (
-    <div className="w-full shadow-xl p-5 rounded-3xl mt-10">
+    <div className="w-full shadow-xl p-5 rounded-3xl mt-10 h-[85vh] overflow-y-scroll">
       <div className="flex items-center justify-between  mb-3">
         <h1 className="flex items-center gap-2 text-xl">
           <span className="text-gray-400">

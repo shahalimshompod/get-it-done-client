@@ -6,7 +6,6 @@ const socket = io("https://get-it-done-server.onrender.com", {
   transports: ["websocket", "polling"],
 });
 
-
 const useSocket = (event, callback) => {
   useEffect(() => {
     // Listen to events

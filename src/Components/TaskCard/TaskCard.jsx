@@ -5,13 +5,12 @@ import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { BiTask } from "react-icons/bi";
 
 const TaskCard = ({ data, setSelectedTask }) => {
   const axiosSecure = useAxiosSecure();
-  // loading state
-  const [loading, setLoading] = useState(false);
-
-  
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [completedLoading, setCompletedLoading] = useState(false);
 
   const {
     _id,
@@ -22,9 +21,8 @@ const TaskCard = ({ data, setSelectedTask }) => {
     createdAt,
   } = data;
 
-  // handle delete task
+  // Handle delete task
   const handleDelete = (id) => {
-    console.log(id);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -35,73 +33,111 @@ const TaskCard = ({ data, setSelectedTask }) => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        setLoading(true);
+        setDeleteLoading(true);
         const res = await axiosSecure.delete(`/task/${id}`);
-
-        console.log(res?.data);
-        // after getting res
         if (res?.data.deletedCount > 0) {
-          setLoading(false);
+          setDeleteLoading(false);
           toast.success("Task has been deleted!");
         }
       }
     });
   };
 
-  // handle update task
+  // Handle update task
   const handleUpdate = (id, task) => {
     setSelectedTask(task);
-    console.log(task._id);
+  };
+
+  // handle completed
+  const handleCompleted = async (id) => {
+    console.log(id);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to complete the task.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes!",
+      cancelButtonText: "No",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setCompletedLoading(true);
+
+        const updatedCategory = {
+          task_category: "completed",
+          completedOn: new Date(),
+        };
+
+        const res = await axiosSecure.patch(
+          `/task-completed/${id}`,
+          updatedCategory
+        );
+        if (res?.data.updated) {
+          setCompletedLoading(false);
+          toast.success("Task Completed!");
+        }
+      }
+    });
   };
 
   return (
-    <div className="border border-[#A1A3AB] p-4 rounded-2xl">
-      <div className="">
-        <div className="text-red-500 bg-red-500 w-[21px] h-[20px] rounded-full absolute"></div>
+    <div className="border border-[#E5E7EB] p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 bg-white">
+      <div className="flex flex-col space-y-4">
+        {/* Task Title and Actions */}
+        <div className="flex justify-between items-start">
+          <h1 className="font-semibold text-xl text-gray-800">{task_title}</h1>
+          <div className="flex space-x-2">
+            {/* Edit Button */}
+            <button
+              onClick={() => handleUpdate(_id, data)}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
+            >
+              <RiEditBoxFill className="text-gray-500 w-5 h-5" />
+            </button>
 
-        <div className="ml-8">
-          <div className="flex justify-between">
-            {/* title */}
-            <h1 className="montserrat w-9/12 font-bold mb-3 text-lg">
-              {task_title}
-            </h1>
-
-            {/* short description */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => handleUpdate(_id, data)}
-                className="text-gray-500 btn btn-circle"
-              >
-                <RiEditBoxFill size={18} />
-              </button>
-              <button
-                onClick={() => handleDelete(_id)}
-                className="text-gray-500 btn btn-circle"
-              >
-                {loading ? (
-                  <span className="loading loading-spinner loading-xs"></span>
-                ) : (
-                  <MdDeleteForever size={19} />
-                )}
-              </button>
-            </div>
+            {/* Delete Button */}
+            <button
+              onClick={() => handleDelete(_id)}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
+              disabled={deleteLoading}
+            >
+              {deleteLoading ? (
+                <span className="loading loading-spinner loading-sm text-gray-500" />
+              ) : (
+                <MdDeleteForever className="text-gray-500 w-5 h-5" />
+              )}
+            </button>
+            {/* Mark as completed*/}
+            <button
+              onClick={() => handleCompleted(_id)}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
+              disabled={completedLoading}
+            >
+              {completedLoading ? (
+                <span className="loading loading-spinner loading-sm text-gray-500" />
+              ) : (
+                <BiTask className="text-gray-500 w-5 h-5" />
+              )}
+            </button>
           </div>
-
-          {/* short description */}
-          <p className="montserrat line-clamp-3 text-sm">{task_description}</p>
         </div>
 
-        <p className="text-[10px] md:text-xs mt-3 ml-8 montserrat">
-          <span className="mr-2">
-            Priority: <span>{task_priority} </span>
+        {/* Task Description */}
+        <p className="text-sm text-gray-600 line-clamp-3">{task_description}</p>
+
+        {/* Task Metadata */}
+        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+          <span className="px-2 py-1 bg-gray-100 rounded-full">
+            Priority: {task_priority}
           </span>
-          <span className="mr-2">
-            Status: <span>{task_category} </span>
+          <span className="px-2 py-1 bg-gray-100 rounded-full">
+            Status: {task_category}
           </span>
-          <span>
-            created on: <span>{createdAt}</span>
+          <span className="px-2 py-1 bg-gray-100 rounded-full">
+            Created: {new Date(createdAt).toLocaleDateString()}
           </span>
-        </p>
+        </div>
       </div>
     </div>
   );
