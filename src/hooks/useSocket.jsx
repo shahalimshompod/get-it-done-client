@@ -1,23 +1,37 @@
-import { useEffect } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { io } from "socket.io-client";
 
-// Socket instance
+// Create socket instance only once, but don't connect immediately
 const socket = io("https://get-it-done-server.onrender.com", {
   transports: ["websocket", "polling"],
+  withCredentials: true,
+  autoConnect: false, // Prevents auto-connecting before event listeners are set
 });
 
 const useSocket = (event, callback) => {
+  const stableCallback = useCallback(callback, []);
+  const [isConnected, setIsConnected] = useState(socket.connected);
+
   useEffect(() => {
-    // Listen to events
-    socket.on(event, callback);
+    if (!socket.connected) {
+      socket.connect(); // Connect only when needed
+    }
 
-    // Cleanup on component unmount
+    const handleConnect = () => setIsConnected(true);
+    const handleDisconnect = () => setIsConnected(false);
+
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
+    socket.on(event, stableCallback);
+
     return () => {
-      socket.off(event);
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
+      socket.off(event, stableCallback);
     };
-  }, [event, callback]);
+  }, [event, stableCallback]);
 
-  return socket;
+  return { socket, isConnected };
 };
 
 export default useSocket;

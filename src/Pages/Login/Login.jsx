@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from "react-icons/md";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import animation from "../../assets/lotties/login.json";
 import Lottie from "lottie-react";
 import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvider";
@@ -13,6 +13,8 @@ import useAxiosPublic from "../../hooks/useAxiosPublic";
 const Login = () => {
   const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const {
     user,
     setUser,
@@ -23,19 +25,17 @@ const Login = () => {
     googleLoading,
     setGoogleLoading,
   } = useContext(AuthContext);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  console.log(loginLoading);
-
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = (data) => {
     setLoginLoading(true);
-    console.log(data);
     const email = data.email;
     const password = data.password;
 
@@ -43,13 +43,24 @@ const Login = () => {
       .then((result) => {
         const user = result?.user;
         setUser(user);
-        console.log(user);
         toast.success("Successfully Logged in!");
-        navigate("/");
+        navigate(location?.state ? location.state : "/");
         setLoginLoading(false);
       })
       .catch((error) => {
-        console.error(error);
+        setLoginLoading(false);
+        // Handling errors
+        switch (error.code) {
+          case "auth/user-not-found":
+            toast.error("User not found. Please check your email or register.");
+            break;
+          case "auth/invalid-credential":
+            toast.error("Incorrect email or password. Please try again.");
+            break;
+          default:
+            toast.error("An error occurred during login. Please try again.");
+            break;
+        }
       });
   };
 
@@ -62,7 +73,7 @@ const Login = () => {
         if (newUser) {
           setUser(newUser);
           toast.success("Successfully Logged in!");
-          navigate("/");
+          navigate(location?.state ? location.state : "/");
 
           // collect user data
           const userInfo = {
@@ -73,14 +84,16 @@ const Login = () => {
 
           // sent user data to database
           const response = await axiosPublic.post("/users", userInfo);
+       
           if (response?.data.insertedId) {
-            navigate("/");
             setGoogleLoading(false);
           }
-          // TODO- STORE THE USER TO DATABASE
         }
       })
-      .catch((err) => console.error("error sign in with google -->", err));
+      .catch((err) => {
+        console.error("error sign in with google -->", err);
+        setGoogleLoading(false);
+      });
   };
 
   if (user?.email) {

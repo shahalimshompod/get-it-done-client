@@ -5,6 +5,8 @@ import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvide
 import useSocket from "../../hooks/useSocket";
 import TaskUpdateModal from "../../Components/TaskUpdateModal/TaskUpdateModal";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import taskLoading from "../../assets/loading-icons/planning.gif";
+import noTask from "../../assets/images/no-task.png";
 
 const TaskCardContainerAllTask = () => {
   const axiosSecure = useAxiosSecure();
@@ -12,13 +14,16 @@ const TaskCardContainerAllTask = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const { user } = useContext(AuthContext);
   const email = user?.email;
+  const [loading, setLoading] = useState(false);
 
   // fetch data
   const fetchTaskData = async () => {
+    setLoading(true);
     const res = await axiosSecure.get(`/all-tasks?query=${email}`);
     if (res?.data) {
       const sortedData = res.data.sort((a, b) => a.order - b.order);
       setAllTaskData(sortedData);
+      setLoading(false);
     }
   };
 
@@ -71,7 +76,6 @@ const TaskCardContainerAllTask = () => {
 
   // Handle drag end event
   const handleDragEnd = async (result) => {
-    // console.log(result);
     if (!result.destination) return;
 
     const newOrder = [...allTaskData];
@@ -92,24 +96,48 @@ const TaskCardContainerAllTask = () => {
   });
 
   return (
-    <div>
+    <div className="no-scrollbar overflow-y-scroll rounded-xl no-scrollbar mt-0 lg:h-[70vh] 2xl:h-[75vh]">
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="task-list">
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
-              {allTaskData.map((data, idx) => (
-                <Draggable key={data._id} draggableId={data._id} index={idx}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <TaskCard setSelectedTask={setSelectedTask} data={data} />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
+            <div
+              className="grid grid-cols-1 gap-4"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {loading ? (
+                <div className="w-full h-[60vh] flex flex-col items-center justify-center">
+                  <img className="w-20" src={taskLoading} alt="loading" />
+                </div>
+              ) : allTaskData?.length > 0 ? (
+                allTaskData.map((data, idx) => (
+                  <Draggable key={data._id} draggableId={data._id} index={idx}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <TaskCard
+                          setSelectedTask={setSelectedTask}
+                          data={data}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-between text-black/50 mt-12">
+                  <img
+                    className="w-2/12 mb-5 opacity-70"
+                    src={noTask}
+                    alt="no tasks"
+                  />
+                  <h1 className="italia text-center text-4xl font-thin ">
+                    No task here!
+                  </h1>
+                </div>
+              )}
               {provided.placeholder}
             </div>
           )}
@@ -121,17 +149,6 @@ const TaskCardContainerAllTask = () => {
         setSelectedTask={setSelectedTask}
       />
     </div>
-    // <div>
-    //   <div className="">
-    //     {allTaskData.map((data, idx) => (
-    //       <TaskCard setSelectedTask={setSelectedTask} key={idx} data={data} />
-    //     ))}
-    //   </div>
-    //   <TaskUpdateModal
-    //     selectedTask={selectedTask}
-    //     setSelectedTask={setSelectedTask}
-    //   />
-    // </div>
   );
 };
 

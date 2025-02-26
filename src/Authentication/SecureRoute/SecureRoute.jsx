@@ -10,7 +10,10 @@ const SecureRoute = ({ children }) => {
   if (userLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <div>
+        <div className="flex flex-col items-center justify-center">
+          <p className="text-2xl 2xl:text-3xl font-black italia mb-4">
+            Getit<span className="text-[#FF6767]">done</span>
+          </p>
           <p className="montserrat font-semibold text-xl text-[#FF6767]">
             Loading...
           </p>

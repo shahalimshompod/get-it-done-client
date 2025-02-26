@@ -34,6 +34,7 @@ const Register = () => {
     googleLoading,
     setGoogleLoading,
   } = useContext(AuthContext);
+
   const {
     register,
     handleSubmit,
@@ -48,45 +49,59 @@ const Register = () => {
 
   const onSubmit = (data) => {
     setRegisterLoading(true);
-    console.log(data);
     const name = data.name;
     const email = data.email;
     const password = data.confirmPassword;
     const imageFile = { image: selectedFile };
 
     // create user
-    createUser(email, password).then(async (result) => {
-      const registeredUser = result?.user;
-      setUser(registeredUser);
-      toast.success("Successfully Registered!");
+    createUser(email, password)
+      .then(async (result) => {
+        const registeredUser = result?.user;
+        setUser(registeredUser);
+        toast.success("Successfully Registered!");
 
-      // sent image to imagebb for hosting
-      const res = await axiosPublic.post(img_hosting_api, imageFile, {
-        headers: {
-          "content-Type": "multipart/form-data",
-        },
-      });
+        // sent image to imagebb for hosting
+        const res = await axiosPublic.post(img_hosting_api, imageFile, {
+          headers: {
+            "content-Type": "multipart/form-data",
+          },
+        });
 
-      //   get hosted image link from imgbb
-      const image = res?.data.data.display_url;
+        //   get hosted image link from imgbb
+        const image = res?.data.data.display_url;
 
-      //   updating user
-      updateUser({ displayName: name, photoURL: image });
+        //   updating user
+        await updateUser({ displayName: name, photoURL: image });
 
-      // user information to be added to database
-      const userInfo = {
-        name: name,
-        email: email,
-        image: image,
-      };
+        // user information to be added to database
+        const userInfo = {
+          name: name,
+          email: email,
+          image: image,
+        };
 
-      // user add to the database
-      const response = await axiosPublic.post("/users", userInfo);
-      if (response?.data.insertedId) {
+        // user add to the database
+        const response = await axiosPublic.post("/users", userInfo);
+        if (response?.data.insertedId) {
+          setRegisterLoading(false);
+          navigate("/");
+        }
+      })
+      .catch((error) => {
         setRegisterLoading(false);
-        navigate("/");
-      }
-    });
+        // Handle specific errors
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            toast.error("Email already in use. Please use a different email.");
+            break;
+          default:
+            toast.error(
+              "An error occurred during registration. Please try again."
+            );
+            break;
+        }
+      });
   };
 
   //   handle google login
@@ -113,15 +128,16 @@ const Register = () => {
             navigate("/");
             setGoogleLoading(false);
           }
-          // TODO- STORE THE USER TO DATABASE
         }
       })
-      .catch((err) => console.error("error sign in with google -->", err));
+      .catch((err) => {
+        console.error("error sign in with google -->", err);
+        setGoogleLoading(false);
+      });
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    console.log("File selected:", file);
     if (file) {
       setSelectedFile(file);
       setProfilePicture(URL.createObjectURL(file));
@@ -145,6 +161,7 @@ const Register = () => {
 
           {/* Registration Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Profile Picture Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 montserrat">
                 Profile Picture
@@ -171,14 +188,17 @@ const Register = () => {
                     id="profilePicture"
                     type="file"
                     accept="image/*"
-                    onChange={handleFileChange} // Attach the onChange event
+                    {...register("profilePicture", {
+                      required: "Profile picture is required",
+                    })}
+                    onChange={handleFileChange}
                     className="hidden"
                   />
                 </label>
               </div>
-              {!selectedFile && errors.profilePicture && (
+              {errors.profilePicture && (
                 <p className="text-red-500 text-sm mt-1 montserrat">
-                  Profile picture is required
+                  {errors.profilePicture.message}
                 </p>
               )}
             </div>

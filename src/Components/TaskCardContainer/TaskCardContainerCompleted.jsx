@@ -6,6 +6,8 @@ import useSocket from "../../hooks/useSocket";
 import TaskUpdateModal from "../TaskUpdateModal/TaskUpdateModal";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useLocation } from "react-router-dom";
+import taskLoading from "../../assets/loading-icons/planning.gif";
+import noTask from "../../assets/images/no-task.png";
 
 const TaskCardContainerCompleted = () => {
   const axiosSecure = useAxiosSecure();
@@ -15,15 +17,16 @@ const TaskCardContainerCompleted = () => {
   const email = user?.email;
   const location = useLocation();
   const path = location.pathname;
-
-  console.log(completedTaskData);
+  const [loading, setLoading] = useState(false);
 
   // fetch data
   const fetchTaskData = async () => {
+    setLoading(true);
     const res = await axiosSecure.get(`/completed-tasks?query=${email}`);
     if (res?.data) {
       const sortedData = res.data.sort((a, b) => a.order - b.order);
       setCompletedTaskData(sortedData);
+      setLoading(false);
     }
   };
 
@@ -34,27 +37,25 @@ const TaskCardContainerCompleted = () => {
 
   // socket
   useSocket("TaskAdded", (data) => {
-    // fetchTaskData()
     if (data.task_category === "completed" && data.email === email) {
       setCompletedTaskData((prev) => [data, ...prev]);
     }
   });
 
-  //   socket task deleted
+  // socket task deleted
   useSocket("TaskDeleted", (id) => {
     setCompletedTaskData((prev) => prev.filter((data) => data._id !== id));
+    fetchTaskData();
   });
 
   // task update
   useSocket("TaskUpdate", (updatedData) => {
     if (updatedData.email === email) {
       if (updatedData.task_category !== "completed") {
-        // If task is no longer "not started", remove it from the list
         setCompletedTaskData((prev) =>
           prev.filter((task) => task._id !== updatedData._id)
         );
       } else {
-        // If task is still "not started", update it in the list
         setCompletedTaskData((prev) =>
           prev.map((task) =>
             task._id === updatedData._id ? updatedData : task
@@ -68,9 +69,21 @@ const TaskCardContainerCompleted = () => {
     fetchTaskData();
   });
 
+  // socket task completed
+  useSocket("TaskCompleted", (data) => {
+    console.log(data);
+    if (data.task_category === "completed") {
+      setCompletedTaskData((prev) =>
+        prev.filter((tasks) => tasks._id !== data.id)
+      );
+    }
+    fetchTaskData();
+  });
+
+  useSocket("TaskCompleted", () => {});
+
   // Handle drag end event
   const handleDragEnd = async (result) => {
-    // console.log(result);
     if (!result.destination) return;
 
     const newOrder = [...completedTaskData];
@@ -87,32 +100,62 @@ const TaskCardContainerCompleted = () => {
 
   // socket task order updated
   useSocket("TaskOrderUpdated", () => {
-    fetchTaskData;
+    fetchTaskData();
   });
 
   return (
     <div
       className={`overflow-y-scroll rounded-xl no-scrollbar ${
-        path == "/" ? "h-[250px]" : " mt-0 h-[75vh] "
+        path == "/"
+          ? "h-[65vh] 2xl:h-[250px]"
+          : " lg:h-[70vh] mt-0 2xl:h-[75vh] "
       }`}
     >
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="task-list">
           {(provided) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
-              {completedTaskData.map((data, idx) => (
-                <Draggable key={data._id} draggableId={data._id} index={idx}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <TaskCard setSelectedTask={setSelectedTask} data={data} />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
+            <div
+              className="grid grid-cols-1 gap-4"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {loading ? (
+                <div
+                  className={`w-full flex flex-col items-center justify-center ${
+                    path === "/" ? "mt-20" : "h-[60vh]"
+                  }`}
+                >
+                  <img className="w-20" src={taskLoading} alt="loading" />
+                </div>
+              ) : completedTaskData?.length > 0 ? (
+                completedTaskData.map((data, idx) => (
+                  <Draggable key={data._id} draggableId={data._id} index={idx}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <TaskCard
+                          setSelectedTask={setSelectedTask}
+                          data={data}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-between text-black/50 mt-12">
+                  <img
+                    className="w-2/12 mb-5 opacity-70"
+                    src={noTask}
+                    alt="no tasks"
+                  />
+                  <h1 className="italia text-center text-4xl font-thin ">
+                    No task completed!
+                  </h1>
+                </div>
+              )}
               {provided.placeholder}
             </div>
           )}

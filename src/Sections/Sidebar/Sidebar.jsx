@@ -3,7 +3,6 @@ import { MdSpaceDashboard } from "react-icons/md";
 import { TbAlertTriangleFilled } from "react-icons/tb";
 import { FaTasks } from "react-icons/fa";
 import { LuLogOut } from "react-icons/lu";
-import { MdCategory } from "react-icons/md";
 import { MdOutlinePendingActions } from "react-icons/md";
 import { GrInProgress } from "react-icons/gr";
 import { BiTask } from "react-icons/bi";
@@ -16,25 +15,24 @@ const Sidebar = () => {
   const { displayName, email, photoURL } = user;
 
   const handleLogout = () => {
-    console.log(user);
     userLogout();
     if (user?.email) {
       toast.success("Successfully Logged out!");
     }
   };
   return (
-    <div className="bg-[#FF6767] w-80 h-[85vh] sticky top-36 flex flex-col p-6 rounded-tr-xl rounded-br-xl text-white mt-10">
+    <div className="bg-[#FF6767] lg:h-[83vh] lg:w-64 2xl:w-80 2xl:h-[85vh] sticky top-36 flex flex-col p-6 rounded-tr-xl rounded-br-xl text-white mt-10">
       {/* Profile Section */}
-      <div className="flex flex-col items-center mb-8 relative">
-        <div className="w-24 h-24 overflow-hidden rounded-full border-4 border-white absolute -top-15">
+      <div className="flex flex-col items-center lg:mb-3 2xl:mb-8 relative">
+        <div className="lg:w-16 lg:h-16 2xl:w-24 2xl:h-24 overflow-hidden rounded-full border-4 border-white absolute -top-15">
           <img
             className="w-full h-full object-cover"
             src={photoURL}
             alt="User"
           />
         </div>
-        <div className="flex flex-col items-center mt-7">
-          <h2 className="mt-4 text-2xl montserrat font-semibold ">
+        <div className="flex flex-col items-center 2xl:mt-7">
+          <h2 className="2xl:mt-4 lg:text-xl 2xl:text-2xl montserrat font-semibold text-center ">
             {displayName}
           </h2>
           <p className="text-sm montserrat text-white">{email}</p>
@@ -49,7 +47,7 @@ const Sidebar = () => {
               end
               to="/"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-xl transition duration-300 montserrat text-xl ${
+                `flex items-center lg:p-2 2xl:p-3 rounded-xl transition duration-300 montserrat 2xl:text-xl ${
                   isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
                 }`
               }
@@ -67,7 +65,7 @@ const Sidebar = () => {
             <NavLink
               to="/tasks/vital-task"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition duration-300 montserrat text-xl ${
+                `flex items-center lg:p-2 2xl:p-3 rounded-lg transition duration-300 montserrat 2xl:text-xl ${
                   isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
                 }`
               }
@@ -85,7 +83,7 @@ const Sidebar = () => {
             <NavLink
               to="/tasks/my-tasks"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition duration-300 montserrat text-xl ${
+                `flex items-center lg:p-2 2xl:p-3 rounded-lg transition duration-300 montserrat 2xl:text-xl ${
                   isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
                 }`
               }
@@ -103,7 +101,7 @@ const Sidebar = () => {
             <NavLink
               to="/tasks/to-do"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition duration-300 montserrat text-xl ${
+                `flex items-center lg:p-2 2xl:p-3 rounded-lg transition duration-300 montserrat 2xl:text-xl ${
                   isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
                 }`
               }
@@ -121,7 +119,7 @@ const Sidebar = () => {
             <NavLink
               to="/tasks/in-progress"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition duration-300 montserrat text-xl ${
+                `flex items-center lg:p-2 2xl:p-3 rounded-lg transition duration-300 montserrat 2xl:text-xl ${
                   isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
                 }`
               }
@@ -139,7 +137,7 @@ const Sidebar = () => {
             <NavLink
               to="/tasks/completed"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition duration-300 montserrat text-xl ${
+                `flex items-center lg:p-2 2xl:p-3 rounded-lg transition duration-300 montserrat 2xl:text-xl ${
                   isActive ? "bg-[#fff] text-[#FF4C4C]" : "hover:bg-[#fff]/20"
                 }`
               }
@@ -159,7 +157,7 @@ const Sidebar = () => {
       <div className="mt-auto">
         <button
           onClick={handleLogout}
-          className="w-full p-3 rounded-lg text-left cursor-pointer montserrat hover:bg-[#fff]/20 transition duration-300 flex items-center gap-2 text-xl"
+          className="w-full p-2 2xl:p-3 rounded-lg text-left cursor-pointer montserrat hover:bg-[#fff]/20 transition duration-300 flex items-center gap-2 2xl:text-xl"
         >
           <span>
             <LuLogOut />

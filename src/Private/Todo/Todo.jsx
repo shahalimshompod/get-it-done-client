@@ -8,8 +8,10 @@ const Todo = () => {
 
   return (
     <div
-      className={`w-full shadow-2xl p-5 rounded-3xl ${
-        path == "/" ? "mt-0 h-[74vh]" : "mt-10 h-[85vh] overflow-y-scroll"
+      className={`w-full shadow-xl lg:shadow-2xl p-2 lg:p-3 2xl:p-5 rounded-2xl lg:rounded-3xl ${
+        path == "/"
+          ? "mt-0 lg:h-[74vh] 2xl:h-[75vh]"
+          : "mt-10 lg:h-[83vh] 2xl:h-[85vh]"
       }`}
     >
       <div className="flex items-center justify-between  mb-3">
@@ -25,9 +27,14 @@ const Todo = () => {
 
           {/* see all button */}
 
-          <Link to="/tasks/to-do">
-            <h3>View</h3>
-          </Link>
+          {path === "/" && (
+            <Link
+              to="/tasks/to-do"
+              className="montserrat text-[#FF6767] border px-2 rounded-2xl hover:bg-[#FF6767]/15"
+            >
+              <h3>View</h3>
+            </Link>
+          )}
         </div>
       </div>
       <div>

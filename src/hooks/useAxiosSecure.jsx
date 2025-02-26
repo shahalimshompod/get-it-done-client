@@ -5,16 +5,31 @@ import { AuthContext } from "../Authentication/AuthContext/AuthContextProvider";
 
 const axiosSecure = axios.create({
   baseURL: "https://get-it-done-server.onrender.com",
+  withCredentials: true,
 });
 
 const useAxiosSecure = () => {
   const navigate = useNavigate();
   const { userLogout } = useContext(AuthContext);
 
-  axiosSecure.interceptors.request.use(
-    function (config) {
-      const token = localStorage.getItem("access-token");
+  // waiting func for token
+  const waitForToken = () => {
+    return new Promise((resolve) => {
+      const checkToken = () => {
+        const token = localStorage.getItem("access-token");
+        if (token) {
+          resolve(token);
+        } else {
+          setTimeout(checkToken, 100);
+        }
+      };
+      checkToken();
+    });
+  };
 
+  axiosSecure.interceptors.request.use(
+    async function (config) {
+      const token = await waitForToken();
       config.headers.authorization = `bearer ${token}`;
       return config;
     },
@@ -29,7 +44,7 @@ const useAxiosSecure = () => {
       return response;
     },
     async (error) => {
-      const status = error.response.status;
+      const status = error?.response?.status;
 
       if (status === 401 || status === 403) {
         await userLogout();

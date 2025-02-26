@@ -6,6 +6,8 @@ import { AuthContext } from "../../Authentication/AuthContext/AuthContextProvide
 import useSocket from "../../hooks/useSocket";
 import TaskUpdateModal from "../TaskUpdateModal/TaskUpdateModal";
 import { useLocation } from "react-router-dom";
+import taskLoading from "../../assets/loading-icons/planning.gif";
+import noTask from "../../assets/images/no-task.png";
 
 const TaskCardContainer = () => {
   const axiosSecure = useAxiosSecure();
@@ -15,13 +17,16 @@ const TaskCardContainer = () => {
   const email = user?.email;
   const location = useLocation();
   const path = location.pathname;
+  const [loading, setLoading] = useState(false);
 
   // fetch data
   const fetchTaskData = async () => {
+    setLoading(true);
     const res = await axiosSecure.get(`/todo-tasks?query=${email}`);
     if (res?.data) {
       const sortedData = res.data.sort((a, b) => a.order - b.order);
       setTodoData(sortedData);
+      setLoading(false);
     }
   };
 
@@ -42,6 +47,11 @@ const TaskCardContainer = () => {
     setTodoData((prev) => prev.filter((data) => data._id !== id));
   });
 
+  // socket task deleted
+  useSocket("TaskDeleted", () => {
+    fetchTaskData();
+  });
+
   // task update
   useSocket("TaskUpdate", (updatedData) => {
     if (updatedData.email === email) {
@@ -58,13 +68,13 @@ const TaskCardContainer = () => {
       }
     }
   });
+
   useSocket("TaskUpdate", () => {
     fetchTaskData();
   });
 
   // Handle drag end event
   const handleDragEnd = async (result) => {
-    // console.log(result);
     if (!result.destination) return;
 
     const newOrder = [...todoData];
@@ -81,7 +91,7 @@ const TaskCardContainer = () => {
 
   // socket task order updated
   useSocket("TaskOrderUpdated", () => {
-    fetchTaskData;
+    fetchTaskData();
   });
 
   // socket task completed
@@ -91,10 +101,14 @@ const TaskCardContainer = () => {
     }
   });
 
+  useSocket("TaskCompleted", () => {
+    fetchTaskData();
+  });
+
   return (
     <div
       className={`overflow-y-scroll no-scrollbar ${
-        path == "/" ? "h-[65vh]" : " mt-0 h-[75vh] "
+        path == "/" ? "lg:h-[62vh] h-[66vh]" : " mt-0 lg:h-[70vh] 2xl:h-[75vh] "
       }`}
     >
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -105,19 +119,39 @@ const TaskCardContainer = () => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {todoData.map((data, idx) => (
-                <Draggable key={data._id} draggableId={data._id} index={idx}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <TaskCard setSelectedTask={setSelectedTask} data={data} />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
+              {loading ? (
+                <div className="w-full h-[60vh] flex flex-col items-center justify-center">
+                  <img className="w-20" src={taskLoading} alt="loading" />
+                </div>
+              ) : todoData?.length > 0 ? (
+                todoData.map((data, idx) => (
+                  <Draggable key={data._id} draggableId={data._id} index={idx}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <TaskCard
+                          setSelectedTask={setSelectedTask}
+                          data={data}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-between text-black/50 mt-48">
+                  <img
+                    className="w-2/12 mb-5 opacity-70"
+                    src={noTask}
+                    alt="no tasks"
+                  />
+                  <h1 className="italia text-center text-4xl font-thin ">
+                    No task to do!
+                  </h1>
+                </div>
+              )}
               {provided.placeholder}
             </div>
           )}
