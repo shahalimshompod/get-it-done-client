@@ -1,15 +1,36 @@
 import { TbAlertTriangleFilled } from "react-icons/tb";
 import TaskCardContainerVitalTask from "../../Components/TaskCardContainer/TaskCardContainerVitalTask";
 import { Link, useLocation } from "react-router-dom";
+import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 
 const VitalTask = () => {
   const location = useLocation();
   const path = location.pathname;
 
+  // Handle drag end event
+  const handleDragEnd = async () => {
+    // result
+    // console.log("success");
+    // if (!result.destination) return;
+
+    // const newOrder = [...vitalTaskData];
+    // const [movedItem] = newOrder.splice(result.source.index, 1);
+    // newOrder.splice(result.destination.index, 0, movedItem);
+    // setVitalTaskData(newOrder);
+
+    // // Update order in database
+    // await axiosSecure.patch("/update-task-order", {
+    //   tasks: newOrder.map((task, index) => ({ _id: task._id, order: index })),
+    //   email: user.email,
+    // });
+  };
+
   return (
     <div
       className={`w-full shadow-xl lg:shadow-2xl p-2 lg:p-3 2xl:p-5 rounded-2xl lg:rounded-3xl ${
-        path == "/" ? "mt-0 lg:h-[74vh] 2xl:h-[75vh] " : "mt-10 lg:h-[83vh] 2xl:h-[85vh] "
+        path == "/"
+          ? "mt-0 lg:h-[74vh] 2xl:h-[75vh] "
+          : "mt-10 lg:h-[83vh] 2xl:h-[85vh] "
       }`}
     >
       <div className="flex items-center justify-between  mb-3">
@@ -32,9 +53,15 @@ const VitalTask = () => {
           )}
         </div>
       </div>
-      <div>
-        <TaskCardContainerVitalTask />
-      </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="task-list">
+          {(provided) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              <TaskCardContainerVitalTask />
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 };

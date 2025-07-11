@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Authentication/AuthContext/AuthContextProvider";
 
 const axiosSecure = axios.create({
-  baseURL: "https://get-it-done-server.onrender.com",
+  // baseURL: "https://get-it-done-server.onrender.com",
+  baseURL: "http://localhost:5000",
   withCredentials: true,
 });
 
@@ -45,6 +46,8 @@ const useAxiosSecure = () => {
     },
     async (error) => {
       const status = error?.response?.status;
+
+      // console.log("here is the status code -> ", status);
 
       if (status === 401 || status === 403) {
         await userLogout();

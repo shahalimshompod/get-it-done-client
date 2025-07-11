@@ -92,6 +92,7 @@ const TaskCardContainerVitalTask = () => {
 
   // Handle drag end event
   const handleDragEnd = async (result) => {
+    // console.log(result);
     if (!result.destination) return;
 
     const newOrder = [...vitalTaskData];

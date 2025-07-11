@@ -71,7 +71,7 @@ const TaskCardContainerCompleted = () => {
 
   // socket task completed
   useSocket("TaskCompleted", (data) => {
-    console.log(data);
+    // console.log(data);
     if (data.task_category === "completed") {
       setCompletedTaskData((prev) =>
         prev.filter((tasks) => tasks._id !== data.id)

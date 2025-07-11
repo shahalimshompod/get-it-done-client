@@ -16,6 +16,8 @@ const TaskCardContainerAllTask = () => {
   const email = user?.email;
   const [loading, setLoading] = useState(false);
 
+  // console.log(allTaskData);
+
   // fetch data
   const fetchTaskData = async () => {
     setLoading(true);
@@ -110,7 +112,7 @@ const TaskCardContainerAllTask = () => {
                   <img className="w-20" src={taskLoading} alt="loading" />
                 </div>
               ) : allTaskData?.length > 0 ? (
-                allTaskData.map((data, idx) => (
+                allTaskData?.map((data, idx) => (
                   <Draggable key={data._id} draggableId={data._id} index={idx}>
                     {(provided) => (
                       <div

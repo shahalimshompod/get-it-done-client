@@ -82,6 +82,8 @@ const Login = () => {
             image: newUser?.photoURL,
           };
 
+          // console.log(userInfo);
+
           // sent user data to database
           const response = await axiosPublic.post("/users", userInfo);
        
